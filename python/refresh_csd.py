@@ -32,7 +32,7 @@ def find_real_dir(file_name, old_dir_name):
         if file_name in files:
             full_path = os.path.abspath(os.path.join(root, file_name))
             full_dir = os.path.split(full_path)[0]
-            # find last occurrence of cocosstudio in the full dir
+            # Find last occurrence of cocosstudio in the full dir
             match = re.match('.*cocosstudio', full_dir)
             if match:
                 prefix_dir = match.group()
@@ -40,8 +40,8 @@ def find_real_dir(file_name, old_dir_name):
                 new_dir_name = re.sub(prefix_dir, '', full_dir)[1:]
                 # Replace Windows '\' to UNIX '/' as frame namespace
                 new_dir_name.replace('\\', '/')
-            if new_dir_name == old_dir_name:
-                return
+                if new_dir_name == old_dir_name:
+                    return
     if new_dir_name:
         return new_dir_name
 
@@ -57,12 +57,12 @@ def update_path(xml_node):
         print new_dir_name
         new_frame_name = "%s/%s" % (new_dir_name, file_name)
         xml_node.set(PATH_KEY, new_frame_name)
+
         plist_node = xml_node.attrib[PLIST_KEY]
-        if plist_node:
-            new_plist_name = "windows/%s.plist" % new_dir_name
-            xml_node.set(PLIST_KEY, new_plist_name)
-        else:
+        if plist_node is None:
             print "WARNING: %s is not in csi!" % xml_node.attrib[PATH_KEY]
+        new_plist_name = "windows/%s.plist" % new_dir_name
+        xml_node.set(PLIST_KEY, new_plist_name)
 
 
 def handle_button(xml_node):
