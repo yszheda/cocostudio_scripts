@@ -11,6 +11,9 @@ from lxml import etree
 PNG_EXT = ".png"
 IMAGE_KEY = "FilePathData"
 
+# NOTE: MAX_SIZE needs to be a string
+MAX_SIZE = "2048"
+
 
 def get_atlas_name(csi_file):
     csi_file_name = os.path.basename(csi_file)
@@ -30,6 +33,12 @@ def read_xml(xml_file):
 
 def write_xml(xml_tree, xml_file):
     xml_tree.write(xml_file, encoding="utf-8", pretty_print=True)
+
+
+def update_max_size(xml_node):
+    max_size_node = xml_node.find('MaxSize')
+    max_size_node.set('Width', MAX_SIZE)
+    max_size_node.set('Height', MAX_SIZE)
 
 
 def clear_images(xml_node):
@@ -64,11 +73,6 @@ def get_image_names(csi_file):
 
 
 def refresh_csi(csi_file):
-    if not os.path.exists(csi_file):
-        err_msg = "%s is not existed!" % csi_file
-        sys.stderr.write(err_msg)
-        sys.exit(1)
-
     xml_tree = read_xml(csi_file)
 
     xml_root = xml_tree.getroot()
@@ -76,9 +80,10 @@ def refresh_csi(csi_file):
     images_node = content_node.find('ImageFiles')
 
     clear_images(images_node)
-
     for image_name in get_image_names(csi_file):
         add_image(images_node, image_name)
+
+    update_max_size(content_node)
 
     write_xml(xml_tree, csi_file)
 
