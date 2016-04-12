@@ -6,6 +6,7 @@
 import os
 import sys
 from lxml import etree
+import re
 
 
 PATH_KEY = 'Path'
@@ -30,7 +31,15 @@ def find_real_dir(file_name, old_dir_name):
     for root, dirs, files in os.walk(res_path):
         if file_name in files:
             full_path = os.path.abspath(os.path.join(root, file_name))
-            new_dir_name = full_path.split('/')[-2]
+            full_dir = os.path.split(full_path)[0]
+            # find last occurrence of cocosstudio in the full dir
+            match = re.match('.*cocosstudio', full_dir)
+            if match:
+                prefix_dir = match.group()
+                # NOTE: the first char is '/' or '\', remove it
+                new_dir_name = re.sub(prefix_dir, '', full_dir)[1:]
+                # Replace Windows '\' to UNIX '/' as frame namespace
+                new_dir_name.replace('\\', '/')
             if new_dir_name == old_dir_name:
                 return
     if new_dir_name:
@@ -87,7 +96,7 @@ def main(argv):
     csd_file = argv[0]
     if os.path.exists(csd_file):
         global res_path
-        res_path = os.path.dirname(csd_file)
+        res_path = os.path.dirname(os.path.abspath(csd_file))
         refresh_csd(csd_file)
     else:
         err_msg = "%s is not existed!" % csd_file
