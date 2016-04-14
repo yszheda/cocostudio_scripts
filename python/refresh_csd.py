@@ -54,13 +54,13 @@ def update_path(xml_node):
     file_name = old_frame_name[-1]
     new_dir_name = find_real_dir(file_name, dir_name)
     if new_dir_name:
-        print new_dir_name
+        print(new_dir_name)
         new_frame_name = "%s/%s" % (new_dir_name, file_name)
         xml_node.set(PATH_KEY, new_frame_name)
 
         plist_node = xml_node.attrib[PLIST_KEY]
         if plist_node is None:
-            print "WARNING: %s is not in csi!" % xml_node.attrib[PATH_KEY]
+            print("WARNING: %s is not in csi!" % xml_node.attrib[PATH_KEY])
         new_plist_name = "windows/%s.plist" % new_dir_name
         xml_node.set(PLIST_KEY, new_plist_name)
 
